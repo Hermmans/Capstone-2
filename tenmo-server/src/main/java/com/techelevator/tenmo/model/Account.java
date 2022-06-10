@@ -1,55 +1,21 @@
 package com.techelevator.tenmo.model;
 
-import javax.persistence.*;
-
-@Table(name = "account")
 public class Account {
 
-
-    public Account() {
-    }
-
-    @Id
-    @SequenceGenerator(
-            name = "account_sequence",
-            sequenceName = "account_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "account_sequence"
-    )
-    private Long id;
-
-    @Column(
-            name = "user_id",
-            nullable = false
-    )
-
-    @JoinTable(
-            name = "tenmo_user",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
+    private Long accountId;
     private Long userId;
+    private Double balance;
 
-    @Column(
-            name = "balance",
-            nullable = false,
-            precision = 13, scale = 2
-    )
-    private double balance;
+    //maybe
+    //account to user has ManyToOne users
+    private User user = new User();
 
-
-
-
-
-    public Long getId() {
-        return id;
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
     public Long getUserId() {
@@ -60,11 +26,11 @@ public class Account {
         this.userId = userId;
     }
 
-    public double getBalance() {
+    public Double getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(Double balance) {
         this.balance = balance;
     }
 }

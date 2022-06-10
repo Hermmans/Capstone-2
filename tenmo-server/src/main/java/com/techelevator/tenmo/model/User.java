@@ -1,43 +1,18 @@
 package com.techelevator.tenmo.model;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-@Table(name = "tenmo_user")
 public class User {
 
-   @Id
-   @SequenceGenerator(
-           name = "tenmo_user_sequence",
-           sequenceName = "tenmo_user_sequence",
-           allocationSize = 1
-   )
-   @GeneratedValue(
-           strategy = GenerationType.SEQUENCE,
-           generator = "tenmo_user_sequence"
-   )
    private Long id;
-
-   @Column(
-           name = "username",
-           nullable = false,
-           columnDefinition = "TEXT"
-   )
    private String username;
-
-   @Column(
-           name = "password_hash",
-           nullable = false,
-           columnDefinition = "TEXT"
-   )
    private String password;
-
-
-
    private boolean activated;
    private Set<Authority> authorities = new HashSet<>();
+
+   //maybe
+   //user to account has a OneToMany
+   private List<Account> accountList = new ArrayList<>();
 
    public User() { }
 

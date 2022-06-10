@@ -1,63 +1,15 @@
 package com.techelevator.tenmo.model;
 
-import javax.persistence.*;
-
-@Table(name = "transfer")
 public class Transfer {
 
-    @Id
-    @SequenceGenerator(
-            name = "transfer_sequence",
-            sequenceName = "transfer_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "transfer_sequence"
-    )
     private Long transferId;
-
-    @JoinTable(
-            name = "transfer_type",
-            joinColumns = @JoinColumn(name = "transfer_type"),
-            inverseJoinColumns = @JoinColumn(name = "transfer_type_id")
-    )
-    private Long transferType;
-
-    @JoinTable(
-            name = "transfer_status",
-            joinColumns = @JoinColumn(name = "transfer_status"),
-            inverseJoinColumns = @JoinColumn(name = "transfer_status_id")
-    )
-    private Long transferStatus;
-
-
-
-
-    @ManyToOne
-    @JoinTable(
-            name = "account",
-            joinColumns = @JoinColumn(name = "account_from"),
-            inverseJoinColumns = @JoinColumn(name = "account_id")
-    )
+    private Long transferTypeId;
+    private Long transferStatusId;
     private Long accountFrom;
-
-    @ManyToOne
-    @JoinTable(
-            name = "account",
-            joinColumns = @JoinColumn(name = "account_to"),
-            inverseJoinColumns = @JoinColumn(name = "account_id")
-    )
     private Long accountTo;
+    private Double amount;
 
-
-    private Long amount;
-
-
-
-
-
-
+    //maybe
 
 
 
@@ -70,20 +22,20 @@ public class Transfer {
         this.transferId = transferId;
     }
 
-    public Long getTransferType() {
-        return transferType;
+    public Long getTransferTypeId() {
+        return transferTypeId;
     }
 
-    public void setTransferType(Long transferType) {
-        this.transferType = transferType;
+    public void setTransferTypeId(Long transferTypeId) {
+        this.transferTypeId = transferTypeId;
     }
 
-    public Long getTransferStatus() {
-        return transferStatus;
+    public Long getTransferStatusId() {
+        return transferStatusId;
     }
 
-    public void setTransferStatus(Long transferStatus) {
-        this.transferStatus = transferStatus;
+    public void setTransferStatusId(Long transferStatusId) {
+        this.transferStatusId = transferStatusId;
     }
 
     public Long getAccountFrom() {
@@ -102,11 +54,11 @@ public class Transfer {
         this.accountTo = accountTo;
     }
 
-    public Long getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(Long amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 }
