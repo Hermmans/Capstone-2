@@ -1,20 +1,23 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
+import com.techelevator.tenmo.services.TransferService;
 
 public class App {
 
     private static final String API_BASE_URL = "http://localhost:8080/";
-
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
     private AccountService accountService;
+    private TransferService transferService;
 
 
     public static void main(String[] args) {
@@ -87,29 +90,40 @@ public class App {
         }
     }
 
-	private void viewCurrentBalance() {
+    private void viewCurrentBalance() {
         accountService = new AccountService(API_BASE_URL, currentUser);
-//        accountService.getBalance(currentUser.getUser().getId());
-        System.out.println("Current user stuff");
-        System.out.println(currentUser.getUser().getUsername());
-        System.out.println();
-        System.out.println(currentUser.getUser().toString());
-
         consoleService.printGetBalance(accountService.getBalance(currentUser.getUser().getId()));
-		
-	}
+    }
 
-	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
-		
-	}
+    private void viewTransferHistory() {
+        transferService = new TransferService(API_BASE_URL, currentUser);
+        Transfer[] transfer =
+                transferService.getAllTransfersToFrom(currentUser.getUser().getId());
+        System.out.println("--------------------------------------------");
+        System.out.println("Transfers");
+        System.out.println("ID        FROM       TO         AMOUNT");
+        for(Transfer t:transfer){
+            System.out.println(t.toString());
+        }
+        System.out.println("--------------------------------------------");
+    }
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
 		
 	}
 
+    //needs work
 	private void sendBucks() {
+        AccountService accountService = new AccountService(API_BASE_URL, currentUser);
+            System.out.println("Choose the username of the bitch you wanna send money to");
+            User[] users = null;
+        for(User user : users){
+            System.out.println(user.getId());
+        }
+
+
+
 		// TODO Auto-generated method stub
 		
 	}

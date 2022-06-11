@@ -35,6 +35,47 @@ public class TransferService {
         return new HttpEntity(headers);
     }
 
+    //new new
+
+    public Transfer[] getAllTransfersToFrom(Long id){
+        Transfer[] transfers = null;
+        try{
+            ResponseEntity<Transfer[]> response =
+                    restTemplate.exchange(API_BASE_URL+"transfers/"+id, HttpMethod.GET,
+                            makeAuthEntity(),Transfer[].class);
+            transfers = response.getBody();
+
+        }catch (RestClientResponseException e) {
+            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
+        } catch (ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return transfers;
+    }
+
+    public Transfer[] listTransfer(){
+        Transfer[] transfers = null;
+        try{
+            ResponseEntity<Transfer[]> response =
+                    restTemplate.exchange(API_BASE_URL+"transfers/",
+                            HttpMethod.GET,
+                            makeAuthEntity(),
+                            Transfer[].class);
+            transfers = response.getBody();
+        }catch (RestClientResponseException e) {
+            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
+        } catch (ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return transfers;
+    }
+
+
+
+
+
+
+
 
     //BASIC CRUD OPERATIONS
 

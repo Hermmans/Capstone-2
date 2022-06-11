@@ -1,15 +1,31 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.UserCredentials;
+import io.cucumber.java.bs.A;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Scanner;
 
 public class ConsoleService {
 
     private final Scanner scanner = new Scanner(System.in);
+    private static final String API_BASE_URL = "http://localhost:8080/";
+    private AuthenticatedUser currentUser;
+    private TransferService transferService;
+    private AccountService accountService;
+
+    @Autowired
+    public ConsoleService(TransferService transferService, AccountService accountService) {
+        this.transferService = transferService;
+        this.accountService=accountService;
+    }
+    public ConsoleService(){
+
+    }
 
     public int promptForMenuSelection(String prompt) {
         int menuSelection;
@@ -90,7 +106,26 @@ public class ConsoleService {
     }
 
     public void printGetBalance(Account acct){
-        System.out.println("User balance : "+acct.getBalance());
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        System.out.println("Your current account balance is: "+nf.format(acct.getBalance()));
     }
+
+    public void viewTransferHistory() {
+        transferService = new TransferService(API_BASE_URL, currentUser);
+        Transfer[] transfer =
+                transferService.getAllTransfersToFrom(currentUser.getUser().getId());
+        System.out.println("--------------------------------------------");
+        System.out.println("Transfers");
+        System.out.println("ID        FROM       TO         AMOUNT");
+        for (Transfer t : transfer) {
+            System.out.println(t.toString());
+        }
+        System.out.println("--------------------------------------------");
+    }
+
+
+
+
+
 
 }

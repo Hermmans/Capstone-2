@@ -25,13 +25,11 @@ public class Transfer {
 
     @Override
     public String toString() {
-        return "Transfer Details: /r" +
-                "Id: " + this.transferId +
-                "From: " +this.accountFrom +
-                "To: "+this.accountTo +
-                "Type: " + transferType.getTypeDesc()+
-                "Status: "+ transferStatus.getTrasferStatusDesc()+
-                "Amount: "+this.amount;
+        return "Id: " + this.transferId +
+                " From: " +this.accountFrom +
+                " To: "+this.accountTo +
+                " Amount: "+this.amount;
+
     }
 
     public Long getTransferId() {
