@@ -8,8 +8,8 @@ public class Transfer {
     private Long accountFrom;
     private Long accountTo;
     private Double amount;
-
-    //maybe
+    private TransferStatus transferStatus = new TransferStatus();
+    private TransferType transferType = new TransferType();
 
     public Transfer() {
     }
@@ -23,6 +23,16 @@ public class Transfer {
         this.amount = amount;
     }
 
+    @Override
+    public String toString() {
+        return "Transfer Details: /r" +
+                "Id: " + this.transferId +
+                "From: " +this.accountFrom +
+                "To: "+this.accountTo +
+                "Type: " + transferType.getTypeDesc()+
+                "Status: "+ transferStatus.getTrasferStatusDesc()+
+                "Amount: "+this.amount;
+    }
 
     public Long getTransferId() {
         return transferId;

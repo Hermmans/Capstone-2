@@ -12,10 +12,11 @@ public interface AccountDAO {
     //works
      Account getBalance(Long userId);
 
+    public long getBalanceObject(long id);
+    public void updateAccount(Account account) ;
+    public long addToBalance(Long amountToAdd, Long accountId);
 
-    Long addToBalance(Long amountToAdd, Long accountId);
-
-    boolean withdraw(Long amountToSub, Long accountId);
+   public long withdraw(Long amountToSub, Long accountId);
 
     Account findByAccountId(Long accountId);
 

@@ -27,10 +27,24 @@ public class AccountController {
     public Account getBalance(@PathVariable Long id) {
         return accountDAO.getBalance(id);
     }
-
-
-
-
+    //some testing
+    @PreAuthorize("permitAll")
+    @RequestMapping(path = "balance_object/{id}", method = RequestMethod.GET)
+    public long getBalance(@PathVariable int id) {
+        return accountDAO.getBalanceObject(id);
+    }
+    //some more testing just to see if it works
+@PreAuthorize("permitAll")
+    @GetMapping(path = "add/{id}/{amount}")
+    public long addToBalance(@PathVariable long id, @PathVariable long amount){
+        return accountDAO.addToBalance(amount, id);
+}
+    //some more testing just to see if it works
+    @PreAuthorize("permitAll")
+    @GetMapping(path = "withdraw/{id}/{amount}")
+    public long withDrawToBalance(@PathVariable long id, @PathVariable long amount) {
+        return accountDAO.withdraw(amount, id);
+    }
 //    @PreAuthorize("permitAll")
 //    @RequestMapping(path = "listusers", method = RequestMethod.GET)
 //    public List<User> listUsers() {
