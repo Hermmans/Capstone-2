@@ -3,7 +3,7 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.model.Account;
-import io.cucumber.java.bs.A;
+import org.apiguardian.api.API;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -74,6 +74,17 @@ public class ConsoleService {
         return scanner.nextLine();
     }
 
+    public Long promptForLong(String prompt) {
+        System.out.print(prompt);
+        while (true) {
+            try {
+                return Long.parseLong(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number.");
+            }
+        }
+    }
+
     public int promptForInt(String prompt) {
         System.out.print(prompt);
         while (true) {
@@ -122,10 +133,6 @@ public class ConsoleService {
         }
         System.out.println("--------------------------------------------");
     }
-
-
-
-
 
 
 }

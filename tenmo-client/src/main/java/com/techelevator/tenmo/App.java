@@ -1,13 +1,14 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.TransferService;
+import io.cucumber.java.bs.A;
+
+import java.util.Scanner;
 
 public class App {
 
@@ -97,15 +98,19 @@ public class App {
 
     private void viewTransferHistory() {
         transferService = new TransferService(API_BASE_URL, currentUser);
-        Transfer[] transfer =
+        Transfer[] transfers =
                 transferService.getAllTransfersToFrom(currentUser.getUser().getId());
         System.out.println("--------------------------------------------");
         System.out.println("Transfers");
         System.out.println("ID        FROM       TO         AMOUNT");
-        for(Transfer t:transfer){
+        for(Transfer t:transfers){
             System.out.println(t.toString());
         }
         System.out.println("--------------------------------------------");
+
+        //********
+        //we need a way to view transfer details based on user input still
+        //********
     }
 
 	private void viewPendingRequests() {
@@ -114,23 +119,75 @@ public class App {
 	}
 
     //needs work
+    //needs a bunch of cleanup
 	private void sendBucks() {
         AccountService accountService = new AccountService(API_BASE_URL, currentUser);
-            System.out.println("Choose the username of the bitch you wanna send money to");
-            User[] users = null;
-        for(User user : users){
-            System.out.println(user.getId());
+        TransferService transferService = new TransferService(API_BASE_URL,currentUser);
+        User[] users = accountService.getUsers();
+        Account[] accounts = accountService.listAccounts();
+        Transfer[] transfers = transferService.listTransfer();
+        Transfer lastTransfer = null;
+        Long newIdNum = 0L;
+        for(Transfer t : transfers){
+            lastTransfer=t;
+            if(lastTransfer.getTransferId()>t.getTransferId()){
+                newIdNum = lastTransfer.getTransferId();
+            }
+            newIdNum++;
         }
+        Scanner input = new Scanner(System.in);
+        System.out.println("Choose the username of the bitch you wanna send money to");
+        System.out.println("---------------------------------------------------------");
+        System.out.println("Users");
+        for(User user : users){
+            System.out.println("---------------------------");
+            System.out.println("Username: "+user.getUsername() +
+                    " ID: "+user.getId());
+        }
+        Long userOfChoice = input.nextLong();
+        if(!userOfChoice.equals(currentUser.getUser().getId())){
+            System.out.println("How much money you wanna send this bich?");
+            Long moneyToSend = input.nextLong();
+            Account accountTo= null;
+            Account accountFrom = null;
+            Transfer transfer = new Transfer();
+            for(Account receiver : accounts){
+                if(receiver.getUserId().equals(userOfChoice)){
+                    accountTo = receiver;
+                }
+                for(Account sender : accounts){
+                    if(sender.getUserId().equals(currentUser.getUser().getId())){
+                        accountFrom=sender;
+                    }
+                }
+            }
+            assert accountFrom != null;
+            if((accountFrom.getBalance()>=moneyToSend) && (moneyToSend>0)){
+                System.out.println("transaction approved..something something");
 
+                accountService.updateWithdraw(accountService.withdraw(accountFrom.getUserId(), moneyToSend.doubleValue()), moneyToSend.doubleValue());
+                accountService.updateDeposit(accountService.deposit(accountTo.getUserId(), moneyToSend.doubleValue()), moneyToSend.doubleValue());
 
+                assert false;
+                transfer.setTransferId(newIdNum);
+                transfer.setAccountTo(accountTo.getAccountId());
+                transfer.setAccountFrom(accountFrom.getAccountId());
+                transfer.setAmount(moneyToSend.doubleValue());
+                transferService.addTransfer(transfer, accountFrom.getAccountId(),accountTo.getAccountId(),moneyToSend.doubleValue());
+            }else{
+                System.out.println("sorry my guy, you broke af");
+                //error handling
+                //try catch's
+                //maybe log it
+            }
+        }
+        else{
+            System.out.println("You can't send money to yourself. It borders embezzlement");
+        }
+    }
 
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void requestBucks() {
-		// TODO Auto-generated method stub
-		
-	}
+    private void requestBucks() {
+        // TODO Auto-generated method stub
+    }
 
 }

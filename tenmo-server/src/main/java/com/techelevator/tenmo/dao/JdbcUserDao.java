@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,7 +23,48 @@ public class JdbcUserDao implements UserDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+
     @Override
+    public User[] findAll() {
+        List<User> users = new ArrayList<>();
+
+        String SQL = "SELECT * FROM tenmo_user;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(SQL);
+        while(results.next()){
+            User user = mapRowToUser(results);
+            users.add(user);
+        }
+        return users.toArray(new User[0]);
+    }
+
+    @Override
+    public User findById(Long id) {
+        User user = null;
+        String SQL = "SELECT * FROM tenmo_user WHERE user_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(SQL, id);
+        while(results.next()){
+            user = mapRowToUser(results);
+        }
+        return user;
+    }
+
+
+    private User mapRowToUser(SqlRowSet rs) {
+        User user = new User();
+        user.setId(rs.getLong("user_id"));
+        user.setUsername(rs.getString("username"));
+        user.setPassword(rs.getString("password_hash"));
+        user.setActivated(true);
+        user.setAuthorities("USER");
+        return user;
+    }
+
+
+
+//////////////////////////////////////
+
+
+
     public int findIdByUsername(String username) {
         String sql = "SELECT user_id FROM tenmo_user WHERE username ILIKE ?;";
         Integer id = jdbcTemplate.queryForObject(sql, Integer.class, username);
@@ -31,18 +73,6 @@ public class JdbcUserDao implements UserDao {
         } else {
             return -1;
         }
-    }
-
-    @Override
-    public List<User> findAll() {
-        List<User> users = new ArrayList<>();
-        String sql = "SELECT user_id, username, password_hash FROM tenmo_user;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-        while(results.next()) {
-            User user = mapRowToUser(results);
-            users.add(user);
-        }
-        return users;
     }
 
     @Override
@@ -79,13 +109,4 @@ public class JdbcUserDao implements UserDao {
         return true;
     }
 
-    private User mapRowToUser(SqlRowSet rs) {
-        User user = new User();
-        user.setId(rs.getLong("user_id"));
-        user.setUsername(rs.getString("username"));
-        user.setPassword(rs.getString("password_hash"));
-        user.setActivated(true);
-        user.setAuthorities("USER");
-        return user;
-    }
 }

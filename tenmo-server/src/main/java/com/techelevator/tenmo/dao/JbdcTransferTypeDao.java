@@ -36,8 +36,8 @@ public class JbdcTransferTypeDao implements TransferTypeDAO {
     public String getTransferedType(long id){
         String sql = "SELECT transfer_type_desc  from transfer_type WHERE transfer_type_id =  ?;";
         String results = jdbcTemplate.queryForObject(sql, String.class, id);
-
-        return results;    }
+        return results;
+        }
 
     private TransferType mapRowToTransferType(SqlRowSet results){
         TransferType transferType = new TransferType();

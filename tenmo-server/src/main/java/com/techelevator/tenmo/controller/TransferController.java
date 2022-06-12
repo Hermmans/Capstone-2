@@ -6,11 +6,11 @@ import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.TransferStatus;
 import com.techelevator.tenmo.model.TransferType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -28,6 +28,41 @@ import java.util.List;
             this.transferDao = transferDao;
             this.transferTypeDAO = transferTypeDAO;
         }
+
+    //END POINTS that have methods associated with them
+
+    @PreAuthorize("permitAll")
+    @GetMapping(path = "transfers/{id}")
+    public Transfer[] listTransferById(@PathVariable Long id) {
+        return transferDao.getTransfersByUserId(id);
+    }
+
+    @PreAuthorize("permitAll")
+    @GetMapping(path = "transfers/")
+    public Transfer[] listAllTransfers(){
+        return transferDao.getAllTransfers();
+    }
+
+    @PreAuthorize("permitAll")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(path = "transfer/{idFrom}/{idTo}/{amount}")
+    public Transfer addToTransfer(@Valid @RequestBody Transfer transfer, @PathVariable Long idFrom, @PathVariable Long idTo,@PathVariable Double amount){
+        return transferDao.addTransfer(transfer, idFrom, idTo, amount);
+    }
+
+    //this I'm currently working on
+    @PreAuthorize("permitAll")
+    @GetMapping(path = "transfers/{id}/details")
+    public Transfer[] listAllTransferDetails(@PathVariable Long id){
+        return transferDao.getTransferDetails(id);
+    }
+
+      //////////////////////////////////////////////
+
+
+
+
+
         //some testing for
     //****************************************
     @PreAuthorize("permitAll")
@@ -49,15 +84,9 @@ import java.util.List;
     public String getTansferTypeWithId(@PathVariable long id){return transferTypeDAO.getTransferedType(id);}
 //end of irrelavant tests
     //********************************************************************
-    @PreAuthorize("permitAll")
-    @GetMapping(path = "transfers/{id}")
-    public Transfer[] listTransferById(@PathVariable Long id) {
-        return transferDao.getTransfersByUserId(id);
-    }
 
-    @PreAuthorize("permitAll")
-    @GetMapping(path = "transfers/")
-    public Transfer[] listAllTransfers(){
-        return transferDao.getAllTransfers();
-    }
-    }
+
+
+
+
+}

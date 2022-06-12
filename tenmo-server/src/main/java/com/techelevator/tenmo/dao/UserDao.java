@@ -6,11 +6,15 @@ import java.util.List;
 
 public interface UserDao {
 
-    List<User> findAll();
+    User[] findAll();
 
+    User findById(Long id);
+
+
+
+
+// might need? not currently implemented
     User findByUsername(String username);
-
-    int findIdByUsername(String username);
 
     boolean create(String username, String password);
 }

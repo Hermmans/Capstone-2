@@ -1,21 +1,12 @@
 package com.techelevator.tenmo.services;
 
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLogger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
 
 public class TransferService {
 
@@ -23,29 +14,33 @@ public class TransferService {
     private RestTemplate restTemplate = new RestTemplate();
     private AuthenticatedUser user;
 
-    public TransferService(String URL, AuthenticatedUser authenticatedUser){
-        this.user=authenticatedUser;
-        this.API_BASE_URL=URL;
+    public TransferService(String URL, AuthenticatedUser authenticatedUser) {
+        this.user = authenticatedUser;
+        this.API_BASE_URL = URL;
     }
 
-    private HttpEntity<Void> makeAuthEntity(){
+    private HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(user.getToken());
         return new HttpEntity(headers);
     }
 
-    //new new
+    private HttpEntity<Transfer> makeTransferEntity(Transfer transfer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(user.getToken());
+        return new HttpEntity<>(transfer, headers);
+    }
 
-    public Transfer[] getAllTransfersToFrom(Long id){
+    public Transfer[] getAllTransfersToFrom(Long id) {
         Transfer[] transfers = null;
-        try{
+        try {
             ResponseEntity<Transfer[]> response =
-                    restTemplate.exchange(API_BASE_URL+"transfers/"+id, HttpMethod.GET,
-                            makeAuthEntity(),Transfer[].class);
+                    restTemplate.exchange(API_BASE_URL + "transfers/" + id, HttpMethod.GET,
+                            makeAuthEntity(), Transfer[].class);
             transfers = response.getBody();
 
-        }catch (RestClientResponseException e) {
+        } catch (RestClientResponseException e) {
             BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
         } catch (ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -53,16 +48,16 @@ public class TransferService {
         return transfers;
     }
 
-    public Transfer[] listTransfer(){
+    public Transfer[] listTransfer() {
         Transfer[] transfers = null;
-        try{
+        try {
             ResponseEntity<Transfer[]> response =
-                    restTemplate.exchange(API_BASE_URL+"transfers/",
+                    restTemplate.exchange(API_BASE_URL + "transfers/",
                             HttpMethod.GET,
                             makeAuthEntity(),
                             Transfer[].class);
             transfers = response.getBody();
-        }catch (RestClientResponseException e) {
+        } catch (RestClientResponseException e) {
             BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
         } catch (ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -70,32 +65,21 @@ public class TransferService {
         return transfers;
     }
 
-
-
-
-
-
-
-
-    //BASIC CRUD OPERATIONS
-
-    //GET
-    public Transfer[] listTransfers(Long id){
-        Transfer[] transfers = null;
-        try{
-            transfers =
-                    restTemplate.exchange(API_BASE_URL+"transfers/"+id,
-                            HttpMethod.GET,
-                            makeAuthEntity(),
-                            Transfer[].class).getBody();
-
-        }catch (RestClientResponseException rcre) {
-            BasicLogger.log(rcre.getRawStatusCode() + " : "+rcre.getStatusText());
-        } catch (ResourceAccessException rae){
-            BasicLogger.log(rae.getMessage());
+    public Transfer addTransfer(Transfer transfer, Long accountFrom, Long accountTo, Double amount) {
+        Transfer t = new Transfer();
+        try {
+            t = restTemplate.exchange(API_BASE_URL + "transfer/" + accountFrom + "/" + accountTo + "/" + amount,
+                    HttpMethod.POST,
+                    makeTransferEntity(t),
+                    Transfer.class).getBody();
+        } catch (RestClientResponseException e) {
+            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
+        } catch (ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
         }
-        return transfers;
+        return t;
     }
+}
 
 
 
@@ -108,25 +92,51 @@ public class TransferService {
 
 
 
-    //END BASIC CRUD OPERATIONS
-
-    public Transfer[] getTransfersById(){
-        Transfer[] transfers = null;
-        try{
-            transfers=restTemplate.exchange(API_BASE_URL+"transfer/user/"+user.getUser().getId(),
-                    HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
-        } catch (RestClientResponseException rcre) {
-            BasicLogger.log(rcre.getRawStatusCode() + " : "+rcre.getStatusText());
-        } catch (ResourceAccessException rae){
-            BasicLogger.log(rae.getMessage());
-        }
-        return transfers;
-    }
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+//    public Transfer[] listTransfers(Long id) {
+//        Transfer[] transfers = null;
+//        try {
+//            transfers =
+//                    restTemplate.exchange(API_BASE_URL + "transfers/" + id,
+//                            HttpMethod.GET,
+//                            makeAuthEntity(),
+//                            Transfer[].class).getBody();
+//
+//        } catch (RestClientResponseException rcre) {
+//            BasicLogger.log(rcre.getRawStatusCode() + " : " + rcre.getStatusText());
+//        } catch (ResourceAccessException rae) {
+//            BasicLogger.log(rae.getMessage());
+//        }
+//        return transfers;
+//    }
+//
+//
+//    public Transfer[] getTransfersById() {
+//        Transfer[] transfers = null;
+//        try {
+//            transfers = restTemplate.exchange(API_BASE_URL + "transfer/user/" + user.getUser().getId(),
+//                    HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+//        } catch (RestClientResponseException rcre) {
+//            BasicLogger.log(rcre.getRawStatusCode() + " : " + rcre.getStatusText());
+//        } catch (ResourceAccessException rae) {
+//            BasicLogger.log(rae.getMessage());
+//        }
+//        return transfers;
+//    }
 
 
     //this might be right?
@@ -157,54 +167,54 @@ public class TransferService {
 //        transfer.setTransferTypeId(2L);
 //        transfer.setTransferStatusId(2L);
 //    }
-
-    public Transfer[] getAllTransferById(Long id){
-        Transfer[] transfers = null;
-        try{
-            transfers = restTemplate.exchange(API_BASE_URL+"transfer/"+id,
-                    HttpMethod.GET,
-                    makeAuthEntity(),
-                    Transfer[].class).getBody();
-        }catch (RestClientResponseException e) {
-            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
-        } catch (ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
-        }
-        return transfers;
-    }
-
-    public List<Transfer> getAllTransferbyId(Long id){
-        List<Transfer> transfers = new ArrayList<>();
-        try{
-            transfers = restTemplate.getForObject(API_BASE_URL+"transfers/"+id, List.class);
-        }catch (RestClientResponseException e) {
-            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
-        } catch (ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
-        }
-        return transfers;
-    }
-
-
-
-    public List<Transfer> getAllTransfer(){
-        List<Transfer> transfers = new ArrayList<>();
-        try{
-            transfers = restTemplate.getForObject(API_BASE_URL+"transfers/", List.class);
-        }catch (RestClientResponseException e) {
-            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
-        } catch (ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
-        }
-        return transfers;
-    }
-
-    public void printTransfers() {
-        List<Transfer> list = getAllTransfer();
-        for (Transfer transfer : list) {
-            System.out.println(transfer.getTransferId());
-        }
-    }}
+//
+//    public Transfer[] getAllTransferById(Long id){
+//        Transfer[] transfers = null;
+//        try{
+//            transfers = restTemplate.exchange(API_BASE_URL+"transfer/"+id,
+//                    HttpMethod.GET,
+//                    makeAuthEntity(),
+//                    Transfer[].class).getBody();
+//        }catch (RestClientResponseException e) {
+//            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
+//        } catch (ResourceAccessException e) {
+//            BasicLogger.log(e.getMessage());
+//        }
+//        return transfers;
+//    }
+//
+//    public List<Transfer> getAllTransferbyId(Long id){
+//        List<Transfer> transfers = new ArrayList<>();
+//        try{
+//            transfers = restTemplate.getForObject(API_BASE_URL+"transfers/"+id, List.class);
+//        }catch (RestClientResponseException e) {
+//            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
+//        } catch (ResourceAccessException e) {
+//            BasicLogger.log(e.getMessage());
+//        }
+//        return transfers;
+//    }
+//
+//
+//
+//    public List<Transfer> getAllTransfer(){
+//        List<Transfer> transfers = new ArrayList<>();
+//        try{
+//            transfers = restTemplate.getForObject(API_BASE_URL+"transfers/", List.class);
+//        }catch (RestClientResponseException e) {
+//            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
+//        } catch (ResourceAccessException e) {
+//            BasicLogger.log(e.getMessage());
+//        }
+//        return transfers;
+//    }
+//
+//    public void printTransfers() {
+//        List<Transfer> list = getAllTransfer();
+//        for (Transfer transfer : list) {
+//            System.out.println(transfer.getTransferId());
+//        }
+//    }}
 
 
 

@@ -1,14 +1,11 @@
 package com.techelevator.tenmo.model;
 
-import java.util.List;
 
 public class Account {
-
 
     private Long accountId;
     private Long userId;
     private Double balance;
-
 
     public Account(Long accountId, Long userId, Double balance) {
         this.accountId = accountId;
@@ -21,10 +18,9 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Account{" +
-                "accountId=" + accountId +
-                ", userId=" + userId +
-                ", balance=" + balance +
+        return  "accountId = " + accountId +
+                ", userId = " + userId +
+                ", balance = " + balance +
                 '}';
     }
 

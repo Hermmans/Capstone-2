@@ -14,15 +14,6 @@ public class Transfer {
     public Transfer() {
     }
 
-    public Transfer(Long transferId, Long transferTypeId, Long transferStatusId, Long accountFrom, Long accountTo, Double amount) {
-        this.transferId = transferId;
-        this.transferTypeId = transferTypeId;
-        this.transferStatusId = transferStatusId;
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
-        this.amount = amount;
-    }
-
     @Override
     public String toString() {
         return "Id: " + this.transferId +
