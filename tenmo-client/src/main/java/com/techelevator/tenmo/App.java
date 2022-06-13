@@ -81,7 +81,7 @@ public class App {
             } else if (menuSelection == 3) {
                 viewPendingRequests();
             } else if (menuSelection == 4) {
-                sendBucks2();
+                sendBucks();
             } else if (menuSelection == 5) {
                 requestBucks();
             } else if (menuSelection == 0) {
@@ -101,23 +101,27 @@ public class App {
     private void viewTransferHistory() {
         transferService = new TransferService(API_BASE_URL, currentUser);
         accountService = new AccountService(API_BASE_URL, currentUser);
-        Transfer[] transfers =
-                transferService.getAllTransfersToFrom(currentUser.getUser().getId());
+
+
         System.out.println("--------------------------------------------");
         System.out.println("Transfers");
-        System.out.println("ID        FROM       TO         AMOUNT");
+        System.out.println("ID        FROM/TO         AMOUNT");
 
-        for(String tdetails : toStringById(currentUser.getUser().getId())){
+        for(String tdetails : toStringTransferDetails(currentUser.getUser().getId())){
             System.out.println(tdetails);
         }
-
-//            System.out.println(toStringById(currentUser.getUser().getId()));
-
         System.out.println("--------------------------------------------");
+        Long transferId = consoleService.promptForLong("Please enter transfer ID to view details (0 to cancel): ");
 
-        //********
-        //we need a way to view transfer details based on user input still
-        //********
+        Transfer[] transfer = transferService.listTransfer();
+
+        for(Transfer trans : transfer){
+            if(trans.getTransferId().equals(transferId)){
+                System.out.println(trans.toString());
+                break;
+            }
+        }
+
     }
 
 	private void viewPendingRequests() {
@@ -126,13 +130,13 @@ public class App {
 		
 	}
 
-    private void sendBucks2(){
+    private void sendBucks(){
         AccountService accountService = new AccountService(API_BASE_URL, currentUser);
         TransferService transferService = new TransferService(API_BASE_URL,currentUser);
         Account accountTo = null;
         Account accountFrom = null;
         Transfer transfer = new Transfer();
-        Scanner input = new Scanner(System.in);
+
         User[] users = accountService.getUsers();
         System.out.println("----------------------------------------");
         System.out.println("Users");
@@ -144,29 +148,37 @@ public class App {
                     "       "+user.getUsername());
         }
         System.out.println("---------------------------");
-        System.out.println("Enter ID of user you are sending to: (0 to cancel): ");
-        Long sendTo = input.nextLong();
+
+        Long sendTo = consoleService.promptForLong("Enter ID of user you are sending to: (0 to cancel): ");
 
         if(!sendTo.equals(currentUser.getUser().getId())) {
             accountTo = accountService.getAccountById(sendTo);
             accountFrom = accountService.getAccountById(currentUser.getUser().getId());
         }
-        System.out.println("Enter amount: ");
-        Long moneyToSend = input.nextLong();
-        if(moneyToSend>0 && moneyToSend<=accountFrom.getBalance().doubleValue()){
-            accountService.updateWithdraw(accountService.withdraw(accountFrom.getUserId(), moneyToSend.doubleValue()), moneyToSend.doubleValue());
+
+        Double moneyToSend = consoleService.promptForDouble("Enter amount: ");
+
+        if(moneyToSend>0 && moneyToSend<= accountFrom.getBalance()){
+
+            accountService.updateWithdraw(accountService.withdraw(accountFrom.getUserId(), moneyToSend), moneyToSend);
             assert accountTo != null;
-            accountService.updateDeposit(accountService.deposit(accountTo.getUserId(), moneyToSend.doubleValue()), moneyToSend.doubleValue());
-//            transfer.setTransferId(newIdNum);
+            accountService.updateDeposit(accountService.deposit(accountTo.getUserId(), moneyToSend), moneyToSend);
+
+//            transfer.setTransferTypeId(transfer.getTransferTypeId());
+//            transfer.setTransferStatusId(transfer.getTransferStatusId());
+
             transfer.setAccountTo(accountTo.getAccountId());
             transfer.setAccountFrom(accountFrom.getAccountId());
-            transfer.setAmount(moneyToSend.doubleValue());
-            transferService.addTransfer(transfer, accountFrom.getAccountId(),accountTo.getAccountId(),moneyToSend.doubleValue());
+            transfer.setAmount(moneyToSend);
+            transferService.addTransfer(transfer, accountFrom.getAccountId(),accountTo.getAccountId(),moneyToSend);
+
+            //transfer set method..transferService?
+
         }
     }
 
-    //we might need a method that finds the account_to and another for account_from based on Long id
-
+    //consolidate these into 1 method
+    //STINKY af
     public Long findAccountTo(Long id){
         accountService = new AccountService(API_BASE_URL, currentUser);
         transferService = new TransferService(API_BASE_URL, currentUser);
@@ -180,9 +192,12 @@ public class App {
                 }
             }
         }
+        assert user != null;
         return user.getId();
     }
 
+    //consolidate these into 1 method
+    //STINKY af
     public Long findAccountFrom(Long id){
         accountService = new AccountService(API_BASE_URL, currentUser);
         transferService = new TransferService(API_BASE_URL, currentUser);
@@ -196,12 +211,11 @@ public class App {
                 }
             }
         }
+        assert user != null;
         return user.getId();
     }
 
-
-//needs to be cleaned up
-    public List<String> toStringById(Long id) {
+    public List<String> toStringTransferDetails(Long id) {
         transferService = new TransferService(API_BASE_URL, currentUser);
         accountService = new AccountService(API_BASE_URL, currentUser);
         List<String> transferDetails = new ArrayList<>();
@@ -209,38 +223,72 @@ public class App {
         String toString = "";
         Account account = accountService.getAccountById(id);
         Account[] accounts = accountService.listAccounts();
-        User user = null;
-        User otherUser = null;
-            for (Transfer transfers : transfer) {
-                for (Account accts : accounts) {
-                    if (account.getAccountId().equals(transfers.getAccountFrom())) {
-                        user = accountService.getUsersById(id);
-                            otherUser = accountService.getUsersById(findAccountTo(transfers.getAccountTo()));
-                            toString = transfers.getTransferId() +
-                                    "        From: " + user.getUsername() +
-                                    "          To: " + otherUser.getUsername() +
-                                    "        $" + transfers.getAmount();
-                            transferDetails.add(toString);
-                    } else if (account.getAccountId().equals(transfers.getAccountTo())) {
-                        user = accountService.getUsersById(id);
-                            otherUser = accountService.getUsersById(findAccountFrom(transfers.getAccountFrom()));
-                            toString = transfers.getTransferId() +
-                                    "        From: " + otherUser.getUsername() +
-                                    "          To: " + user.getUsername() +
-                                    "        $" + transfers.getAmount();
-                            transferDetails.add(toString);
 
-                    }
+        User otherUser = null;
+        for (Transfer transfers : transfer) {
+            for (Account accts : accounts) {
+                if (account.getAccountId().equals(transfers.getAccountFrom())) {
+                    otherUser = accountService.getUsersById(findAccountTo(transfers.getAccountTo()));
+                    toString = transfers.getTransferId() +
+                            "          To: " + otherUser.getUsername() +
+                            "        " + consoleService.printPrettyMoney(transfers.getAmount());
+                    transferDetails.add(toString);
+                    break;
+                } else if (account.getAccountId().equals(transfers.getAccountTo())) {
+                    otherUser = accountService.getUsersById(findAccountFrom(transfers.getAccountFrom()));
+                    toString = transfers.getTransferId() +
+                            "        From: " + otherUser.getUsername() +
+                            "        " + consoleService.printPrettyMoney(transfers.getAmount());
+
+                    transferDetails.add(toString);
+                    break;
                 }
             }
-                return transferDetails;
+        }
+        return transferDetails;
     }
 
 
-
-
-
-
+//needs to be cleaned up
+    //working on a cleaner version ^^^
+//    public List<String> toStringById(Long id) {
+//        transferService = new TransferService(API_BASE_URL, currentUser);
+//        accountService = new AccountService(API_BASE_URL, currentUser);
+//        List<String> transferDetails = new ArrayList<>();
+//        Transfer[] transfer = transferService.getAllTransfersToFrom(id);
+//        String toString = "";
+//        Account account = accountService.getAccountById(id);
+//        Account[] accounts = accountService.listAccounts();
+//        User user = null;
+//        User otherUser = null;
+//            for (Transfer transfers : transfer) {
+//                for (Account accts : accounts) {
+//                    if (account.getAccountId().equals(transfers.getAccountFrom())) {
+//                        user = accountService.getUsersById(id);
+//                            otherUser = accountService.getUsersById(findAccountTo(transfers.getAccountTo()));
+//
+//                            toString = transfers.getTransferId() +
+//                                    "        From: " + user.getUsername() +
+//                                    "          To: " + otherUser.getUsername() +
+//                                    "        " + consoleService.printPrettyMoney(transfers.getAmount());
+//
+//                            transferDetails.add(toString);
+//                    } else if (account.getAccountId().equals(transfers.getAccountTo())) {
+//                        user = accountService.getUsersById(id);
+//                            otherUser = accountService.getUsersById(findAccountFrom(transfers.getAccountFrom()));
+//
+//                            toString = transfers.getTransferId() +
+//                                    "        From: " + otherUser.getUsername() +
+//                                    "          To: " + user.getUsername() +
+//                                    "        " + consoleService.printPrettyMoney(transfers.getAmount());
+//
+//                            transferDetails.add(toString);
+//
+//                    }
+//                }
+//            }
+//                return transferDetails;
+//    }
 
 //remnants of the old sendBucks methods--reference only
 //    //needs work

@@ -2,10 +2,8 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @PreAuthorize("isAuthenticated()")
@@ -13,12 +11,9 @@ public class UserController {
 
     private UserDao userDao;
 
-    @Autowired
     public UserController(UserDao userDao) {
         this.userDao = userDao;
     }
-
-    //END POINTS that have methods associated with them
 
     @PreAuthorize("permitAll")
     @RequestMapping(path = "user/{id}", method = RequestMethod.GET)
@@ -32,5 +27,5 @@ public class UserController {
         return userDao.findAll();
     }
 
-    ////////////////////////////////////////////////
+
 }

@@ -8,11 +8,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Component
 public class JbdcTransferDAO implements TransferDao{
 
     @Autowired
-    JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    JdbcTemplate jdbcTemplate;
+
+    public JbdcTransferDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     //retrieves all transfers SENT and RECEIVED by user_id
     @Override

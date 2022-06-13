@@ -13,31 +13,41 @@ import java.util.List;
 @Component
 public class JbdcTransferTypeDao implements TransferTypeDAO {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate = new JdbcTemplate();
 
-        @Override
-    public List<TransferType> getAllTranferTypes(){
-            List <TransferType> t = new ArrayList<>();
-            String SQL = "SELECT * from transfer_type;";
+    private JdbcTemplate jdbcTemplate;
 
-            try {
-                SqlRowSet results = jdbcTemplate.queryForRowSet(SQL);
-                while (results.next()) {
-                    t.add(mapRowToTransferType(results));
-                } }
-            catch(DataAccessException e)
-            {
-                System.out.print("Error accessing data");
-            }
-            return t;
+    public JbdcTransferTypeDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
-    public String getTransferedType(long id){
-        String sql = "SELECT transfer_type_desc  from transfer_type WHERE transfer_type_id =  ?;";
-        String results = jdbcTemplate.queryForObject(sql, String.class, id);
-        return results;
+    public TransferType[] getAllTranferTypes(){
+        List <TransferType> t = new ArrayList<>();
+        String SQL = "SELECT * FROM transfer_type;";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(SQL);
+            while (results.next()) {
+                TransferType transferType = mapRowToTransferType(results);
+                t.add(transferType);
+            }
+        } catch(DataAccessException e) {
+            System.out.print("Error accessing data");
         }
+        return t.toArray(new TransferType[0]);
+
+    }
+
+    @Override
+    public TransferType getTransfereTypeById(Long id) {
+        TransferType transferType = null;
+        String SQL = "SELECT * FROM transfer_type WHERE transfer_type_id =  ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(SQL, id);
+        while(results.next()){
+            transferType = mapRowToTransferType(results);
+        }
+        return transferType;
+    }
+
 
     private TransferType mapRowToTransferType(SqlRowSet results){
         TransferType transferType = new TransferType();

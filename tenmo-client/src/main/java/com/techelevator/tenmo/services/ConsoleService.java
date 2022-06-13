@@ -3,7 +3,6 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.model.Account;
-import org.apiguardian.api.API;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -97,6 +96,17 @@ public class ConsoleService {
         }
     }
 
+    public Double promptForDouble(String prompt) {
+        System.out.print(prompt);
+        while (true) {
+            try {
+                return Double.parseDouble(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number.");
+            }
+        }
+    }
+
     public BigDecimal promptForBigDecimal(String prompt) {
         System.out.print(prompt);
         while (true) {
@@ -122,21 +132,11 @@ public class ConsoleService {
         System.out.println("Your current account balance is: " + nf.format(acct.getBalance()));
     }
 
-//    public void viewTransferHistory() {
-//        transferService = new TransferService(API_BASE_URL, currentUser);
-//        Transfer[] transfer =
-//                transferService.getAllTransfersToFrom(this.currentUser.getUser().getId());
-//        System.out.println("--------------------------------------------");
-//        System.out.println("Transfers");
-//        System.out.println("ID        FROM       TO         AMOUNT");
-//        for (Transfer t : transfer) {
-//            System.out.println(toStringById(t.getAccountFrom()));
-//        }
-//        System.out.println("--------------------------------------------");
-//    }
+    public String printPrettyMoney(Double money) {
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        return nf.format(money);
+    }
 
-    //if the id I'm passing in (accountFROM) == id
-    //print FROM
-    //else print TO
+
 
 }
