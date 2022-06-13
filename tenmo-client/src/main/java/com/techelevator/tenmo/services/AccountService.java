@@ -84,22 +84,47 @@ public class AccountService {
         return users;
     }
 
+    public User getUsersById(Long id) {
+        User user = null;
+        try {
+            user = restTemplate.exchange(API_BASE_URL + "user/" + id,
+                    HttpMethod.GET,
+                    makeAuthEntity(),
+                    User.class).getBody();
+
+        } catch (RestClientResponseException rcre) {
+            BasicLogger.log(rcre.getRawStatusCode() + " : " + rcre.getStatusText());
+        } catch (ResourceAccessException rae) {
+            BasicLogger.log(rae.getMessage());
+        }
+        return user;
+    }
+
+    public Account getAccountById(Long id) {
+        Account account = null;
+        try {
+            account = restTemplate.exchange(API_BASE_URL + "account/user/" + id,
+                    HttpMethod.GET,
+                    makeAuthEntity(),
+                    Account.class).getBody();
+
+        } catch (RestClientResponseException rcre) {
+            BasicLogger.log(rcre.getRawStatusCode() + " : " + rcre.getStatusText());
+        } catch (ResourceAccessException rae) {
+            BasicLogger.log(rae.getMessage());
+        }
+        return account;
+    }
+
+
     //this updates the balance and returns an account with the new balance
     public Account withdraw(Long id, Double amount){
-        Account accountFrom = new Account();
-        Account[] allAccounts = listAccounts();
-        Double balance = 0D;
-        for(Account acct: allAccounts){
-            if(acct.getUserId().equals(id)){
-                accountFrom = acct;
-                balance = acct.getBalance();
-            }
-
-            accountFrom.setBalance(balance-amount);
-        }
-
+        Account accountFrom = getAccountById(id);
+        Double balance = accountFrom.getBalance();
+        accountFrom.setBalance(balance-amount);
         return accountFrom;
     }
+
     //this sends a PUT with the new balance post withdrawal
     public void updateWithdraw(Account withdrawnAccount, Double amount){
         HttpEntity<Account> entity = makeTransferEntity(withdrawnAccount);
@@ -115,16 +140,9 @@ public class AccountService {
 
     //this updates the balance and returns an account with the new balance
     public Account deposit(Long id, Double amount){
-        Account accountTo = new Account();
-        Account[] allAccounts = listAccounts();
-        Double balance = 0D;
-        for(Account acct: allAccounts){
-            if(acct.getUserId().equals(id)){
-                accountTo = acct;
-                balance= acct.getBalance();
-            }
-            accountTo.setBalance(balance+amount);
-        }
+        Account accountTo = getAccountById(id);
+        Double balance = accountTo.getBalance();
+        accountTo.setBalance(balance-amount);
         return accountTo;
     }
 
@@ -132,7 +150,7 @@ public class AccountService {
     public void updateDeposit(Account depositAccount, Double amount){
         HttpEntity<Account> entity = makeTransferEntity(depositAccount);
         try{
-            restTemplate.put(API_BASE_URL+"withdraw/"+depositAccount.getUserId()+"/"+amount,
+            restTemplate.put(API_BASE_URL+"deposit/"+depositAccount.getUserId()+"/"+amount,
                     entity);
         }catch (RestClientResponseException e) {
             BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());

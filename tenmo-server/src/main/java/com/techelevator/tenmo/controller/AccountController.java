@@ -32,15 +32,23 @@ public class AccountController {
     }
 
     @PreAuthorize("permitAll")
+    @GetMapping(path = "account/user/{id}")
+    public Account getByUserId(@PathVariable Long id){
+        return accountDAO.findByAccountId(id);
+    }
+
+    @PreAuthorize("permitAll")
     @PutMapping(path = "withdraw/{id}/{amount}")
     public Account withdraw(@Valid @RequestBody Account account, @PathVariable Long id, @PathVariable Double amount){
-        return accountDAO.withdrawAcct(account, id,amount);
+        Account account1 = accountDAO.withdrawAcct(account, id, amount);
+        return account1;
     }
 
     @PreAuthorize("permitAll")
     @PutMapping(path = "deposit/{id}/{amount}")
     public Account deposit(@Valid @RequestBody Account account, @PathVariable Long id,@PathVariable Double amount){
-        return accountDAO.depositAcct(account,id,amount);
+        Account account1 = accountDAO.depositAcct(account, id, amount);
+        return account1;
     }
 
     @PreAuthorize("permitAll")

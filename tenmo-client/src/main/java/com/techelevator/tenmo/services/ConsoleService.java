@@ -21,9 +21,10 @@ public class ConsoleService {
     @Autowired
     public ConsoleService(TransferService transferService, AccountService accountService) {
         this.transferService = transferService;
-        this.accountService=accountService;
+        this.accountService = accountService;
     }
-    public ConsoleService(){
+
+    public ConsoleService() {
 
     }
 
@@ -116,23 +117,26 @@ public class ConsoleService {
         System.out.println("An error occurred. Check the log for details.");
     }
 
-    public void printGetBalance(Account acct){
+    public void printGetBalance(Account acct) {
         NumberFormat nf = NumberFormat.getCurrencyInstance();
-        System.out.println("Your current account balance is: "+nf.format(acct.getBalance()));
+        System.out.println("Your current account balance is: " + nf.format(acct.getBalance()));
     }
 
-    public void viewTransferHistory() {
-        transferService = new TransferService(API_BASE_URL, currentUser);
-        Transfer[] transfer =
-                transferService.getAllTransfersToFrom(currentUser.getUser().getId());
-        System.out.println("--------------------------------------------");
-        System.out.println("Transfers");
-        System.out.println("ID        FROM       TO         AMOUNT");
-        for (Transfer t : transfer) {
-            System.out.println(t.toString());
-        }
-        System.out.println("--------------------------------------------");
-    }
+//    public void viewTransferHistory() {
+//        transferService = new TransferService(API_BASE_URL, currentUser);
+//        Transfer[] transfer =
+//                transferService.getAllTransfersToFrom(this.currentUser.getUser().getId());
+//        System.out.println("--------------------------------------------");
+//        System.out.println("Transfers");
+//        System.out.println("ID        FROM       TO         AMOUNT");
+//        for (Transfer t : transfer) {
+//            System.out.println(toStringById(t.getAccountFrom()));
+//        }
+//        System.out.println("--------------------------------------------");
+//    }
 
+    //if the id I'm passing in (accountFROM) == id
+    //print FROM
+    //else print TO
 
 }

@@ -1,5 +1,7 @@
 package com.techelevator.tenmo.model;
 
+import com.techelevator.tenmo.services.AccountService;
+
 public class Transfer {
 
     private Long transferId;
@@ -14,14 +16,6 @@ public class Transfer {
     public Transfer() {
     }
 
-    @Override
-    public String toString() {
-        return "Id: " + this.transferId +
-                " From: " +this.accountFrom +
-                " To: "+this.accountTo +
-                " Amount: "+this.amount;
-
-    }
 
     public Long getTransferId() {
         return transferId;

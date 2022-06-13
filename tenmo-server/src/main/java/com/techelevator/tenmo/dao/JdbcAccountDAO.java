@@ -40,6 +40,17 @@ import java.util.List;
         }
 
         @Override
+        public Account findByAccountId(Long id) {
+            Account account = null;
+            String SQL = "SELECT * FROM account WHERE user_id = ?;";
+            SqlRowSet results = jdbcTemplate.queryForRowSet(SQL, id);
+            while(results.next()){
+                account = mapRowToAccount(results);
+        }
+        return account;
+    }
+
+        @Override
         public Account[] findAllAccounts() {
             List<Account> accounts = new ArrayList<>();
             String SQL = "SELECT * FROM account;";
@@ -80,6 +91,8 @@ import java.util.List;
         jdbcTemplate.update(SQL,amount, id);
         return acctToReturn;
     }
+
+
 
     private Account mapRowToAccount(SqlRowSet result) {
         Account account = new Account();
@@ -142,11 +155,6 @@ import java.util.List;
                     "WHERE user_id = ?";
             int results = jdbcTemplate.update(SQL,newAmount, accountId);
                 return newAmount;
-        }
-
-        @Override
-        public Account findByAccountId(Long accountId) {
-            return null;
         }
 
 

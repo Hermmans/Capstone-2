@@ -19,6 +19,8 @@ public interface AccountDAO {
 
     Account depositAcct(Account account, Long id, Double amount);
 
+    Account findByAccountId(Long id);
+
     ////////
 
 
@@ -28,7 +30,7 @@ public interface AccountDAO {
 
    public long withdraw(Long amountToSub, Long accountId);
 
-    Account findByAccountId(Long accountId);
+
 
 
 }
