@@ -116,6 +116,22 @@ public class AccountService {
         return account;
     }
 
+    public Account getAccountByAccountId(Long id) {
+        Account account = null;
+        try {
+            account = restTemplate.exchange(API_BASE_URL + "account/" + id,
+                    HttpMethod.GET,
+                    makeAuthEntity(),
+                    Account.class).getBody();
+
+        } catch (RestClientResponseException rcre) {
+            BasicLogger.log(rcre.getRawStatusCode() + " : " + rcre.getStatusText());
+        } catch (ResourceAccessException rae) {
+            BasicLogger.log(rae.getMessage());
+        }
+        return account;
+    }
+
 
     //this updates the balance and returns an account with the new balance
     public Account withdraw(Long id, Double amount){

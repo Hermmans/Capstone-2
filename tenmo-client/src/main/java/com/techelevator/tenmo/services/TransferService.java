@@ -1,9 +1,6 @@
 package com.techelevator.tenmo.services;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.TransferStatus;
-import com.techelevator.tenmo.model.TransferType;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
@@ -50,6 +47,42 @@ public class TransferService {
         return transfers;
     }
 
+
+    public TransferDetail[] getAllTransferFrom(Long id) {
+        TransferDetail[] transfers = null;
+        try {
+            ResponseEntity<TransferDetail[]> response =
+                    restTemplate.exchange(API_BASE_URL + "transferdetails/" + id, HttpMethod.GET,
+                            makeAuthEntity(), TransferDetail[].class);
+            transfers = response.getBody();
+
+        } catch (RestClientResponseException e) {
+            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
+        } catch (ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return transfers;
+    }
+//
+//
+//    public TransferDetail[] getAllTransferTo(Long id) {
+//        TransferDetail[] transfers = null;
+//        try {
+//            ResponseEntity<TransferDetail[]> response =
+//                    restTemplate.exchange(API_BASE_URL + "transfersto/" + id+"/details", HttpMethod.GET,
+//                            makeAuthEntity(), TransferDetail[].class);
+//            transfers = response.getBody();
+//
+//        } catch (RestClientResponseException e) {
+//            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
+//        } catch (ResourceAccessException e) {
+//            BasicLogger.log(e.getMessage());
+//        }
+//        return transfers;
+//    }
+
+
+
     public Transfer[] listTransfer() {
         Transfer[] transfers = null;
         try {
@@ -67,6 +100,22 @@ public class TransferService {
         return transfers;
     }
 
+    public Transfer addTransferFull(Transfer transfer, Long statusId, Long statusTypeId, Long accountFrom, Long accountTo, Double amount) {
+        Transfer t = new Transfer();
+        try {
+            t = restTemplate.exchange(API_BASE_URL + "transfer/"+statusId+"/"+statusTypeId+"/"+accountFrom+"/"+accountTo+"/"+ amount,
+                    HttpMethod.POST,
+                    makeTransferEntity(t),
+                    Transfer.class).getBody();
+        } catch (RestClientResponseException e) {
+            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
+        } catch (ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return t;
+    }
+
+
     public Transfer addTransfer(Transfer transfer, Long accountFrom, Long accountTo, Double amount) {
         Transfer t = new Transfer();
         try {
@@ -80,6 +129,18 @@ public class TransferService {
             BasicLogger.log(e.getMessage());
         }
         return t;
+    }
+
+    public void updateTransfer(Transfer transfer, Long typeId, Long statusId, Long transferId){
+        HttpEntity<Transfer> entity = makeTransferEntity(transfer);
+        try{
+            restTemplate.put(API_BASE_URL+"transfer/update/"+typeId+"/"+statusId+"/"+transferId,
+                    entity);
+        }catch (RestClientResponseException e) {
+            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
+        } catch (ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
     }
 
     public TransferStatus[] listTransferStatus() {
@@ -147,6 +208,8 @@ public class TransferService {
         }
         return transferStatus;
     }
+
+
 
 }
 

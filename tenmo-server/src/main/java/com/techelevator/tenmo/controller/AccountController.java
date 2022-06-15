@@ -29,6 +29,12 @@ public class AccountController {
     @PreAuthorize("permitAll")
     @GetMapping(path = "account/user/{id}")
     public Account getByUserId(@PathVariable Long id){
+        return accountDAO.findByUserId(id);
+    }
+
+    @PreAuthorize("permitAll")
+    @GetMapping(path = "account/{id}")
+    public Account getByAccountId(@PathVariable Long id){
         return accountDAO.findByAccountId(id);
     }
 

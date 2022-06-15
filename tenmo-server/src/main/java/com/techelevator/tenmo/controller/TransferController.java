@@ -2,9 +2,7 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.TransferStatusDAO;
 import com.techelevator.tenmo.dao.TransferTypeDAO;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.TransferStatus;
-import com.techelevator.tenmo.model.TransferType;
+import com.techelevator.tenmo.model.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +32,12 @@ public class  TransferController {
     }
 
     @PreAuthorize("permitAll")
+    @GetMapping(path = "trans/{id}")
+    public Transfer listTransferByTransferId(@PathVariable Long id) {
+        return transferDao.getTransferByTransferId(id);
+    }
+
+    @PreAuthorize("permitAll")
     @GetMapping(path = "transfers/")
     public Transfer[] listAllTransfers(){
         return transferDao.getAllTransfers();
@@ -43,17 +47,46 @@ public class  TransferController {
     @PreAuthorize("permitAll")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "transfer/{idFrom}/{idTo}/{amount}")
-    public Transfer addToTransfer(@Valid @RequestBody Transfer transfer, @PathVariable Long idFrom, @PathVariable Long idTo,@PathVariable Double amount){
+    public Transfer addToTransfer(@Valid @RequestBody Transfer transfer,
+                                  @PathVariable Long idFrom,
+                                  @PathVariable Long idTo,
+                                  @PathVariable Double amount){
         return transferDao.addTransfer(transfer, idFrom, idTo, amount);
     }
 
-    //this I'm currently working on
+    @PreAuthorize("permitAll")
+    @PutMapping(path = "transfer/update/{typeId}/{statusId}/{transferId}")
+    public void update(@Valid @RequestBody Transfer transfer,
+                            @PathVariable Long typeId,
+                            @PathVariable Long statusId,
+                            @PathVariable Long transferId){
+        transferDao.updateTransfer(transfer, typeId, statusId, transferId);
+    }
+
+    @PreAuthorize("permitAll")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(path = "transfer/{statusId}/{statusTypeId}/{idFrom}/{idTo}/{amount}")
+    public Transfer addToTransferFull(@Valid @RequestBody Transfer transfer,
+                                      @PathVariable Long statusId,
+                                      @PathVariable Long statusTypeId,
+                                      @PathVariable Long idFrom,
+                                      @PathVariable Long idTo,
+                                      @PathVariable Double amount){
+        return transferDao.addTransferFull(transfer, statusId, statusTypeId, idFrom, idTo, amount);
+    }
+
     //TRANSFER DETAILS
     @PreAuthorize("permitAll")
-    @GetMapping(path = "transfers/{id}/details")
-    public Transfer[] listAllTransferDetails(@PathVariable Long id){
+    @GetMapping(path = "transferdetails/{id}")
+    public TransferDetail[] listTransferDetails(@PathVariable Long id){
         return transferDao.getTransferDetails(id);
     }
+
+//    @PreAuthorize("permitAll")
+//    @GetMapping(path="transferdetail/sum/{id}")
+//    public TransferDetail getTransferSum(@PathVariable Long id){
+//        return transferDao.getTransferSum(id);
+//    }
 
     //TRANSFER STATUS'
     @PreAuthorize("permitAll")

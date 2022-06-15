@@ -37,7 +37,7 @@ import java.util.List;
         }
 
         @Override
-        public Account findByAccountId(Long id) {
+        public Account findByUserId(Long id) {
             Account account = null;
             String SQL = "SELECT * FROM account WHERE user_id = ?;";
             SqlRowSet results = jdbcTemplate.queryForRowSet(SQL, id);
@@ -47,7 +47,18 @@ import java.util.List;
         return account;
     }
 
-        @Override
+    @Override
+    public Account findByAccountId(Long id) {
+        Account account = null;
+        String SQL = "SELECT * FROM account WHERE account_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(SQL, id);
+        while(results.next()){
+            account = mapRowToAccount(results);
+        }
+        return account;
+    }
+
+    @Override
         public Account[] findAllAccounts() {
             List<Account> accounts = new ArrayList<>();
             String SQL = "SELECT * FROM account;";
@@ -61,7 +72,7 @@ import java.util.List;
 
     @Override
     public Account withdrawAcct(Account account, Long id, Double amount) {
-            Account acct = findByAccountId(id);
+            Account acct = findByUserId(id);
             acct.setBalance(acct.getBalance()-amount);
             String SQL = "UPDATE account SET balance = balance - ? WHERE user_id = ?;";
             jdbcTemplate.update(SQL,amount, id);
@@ -70,7 +81,7 @@ import java.util.List;
 
     @Override
     public Account depositAcct(Account account, Long id, Double amount) {
-            Account acct = findByAccountId(id);
+            Account acct = findByUserId(id);
             acct.setBalance(acct.getBalance()+amount);
             String SQL = "UPDATE account SET balance = balance + ? WHERE user_id = ?;";
             jdbcTemplate.update(SQL,amount, id);

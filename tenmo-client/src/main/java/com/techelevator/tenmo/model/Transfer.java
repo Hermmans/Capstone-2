@@ -1,26 +1,42 @@
 package com.techelevator.tenmo.model;
 
-import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.ConsoleService;
 
 public class Transfer {
 
     private Long transferId;
+    private Long transferTypeId;
+    private String transferTypeDesc;
+    private Long transferStatusId;
+    private String trasferStatusDesc;
 
     private Long accountFrom;
     private Long accountTo;
     private Double amount;
 
-    private Long transferStatusId;
-    private String trasferStatusDesc;
+    public Transfer(Long transferId, Long transferTypeId, String transferTypeDesc, Long transferStatusId, String trasferStatusDesc, Long accountFrom, Long accountTo, Double amount) {
+        this.transferId = transferId;
+        this.transferTypeId = transferTypeId;
+        this.transferTypeDesc = transferTypeDesc;
+        this.transferStatusId = transferStatusId;
+        this.trasferStatusDesc = trasferStatusDesc;
+        this.accountFrom = accountFrom;
+        this.accountTo = accountTo;
+        this.amount = amount;
+    }
 
-    private Long transferTypeId;
-    private String typeDesc;
+    public String getTransferTypeDesc() {
+        return transferTypeDesc;
+    }
+
+    public void setTransferTypeDesc(String transferTypeDesc) {
+        this.transferTypeDesc = transferTypeDesc;
+    }
 
     private final ConsoleService consoleService = new ConsoleService();
 
-    @Override
-    public String toString() {
+
+    public String toString(TransferType transferType, TransferStatus transferStatus) {
         return "-------------------- \n" +
                 "Transfer Details\n" +
                 "--------------------\n" +
@@ -28,8 +44,8 @@ public class Transfer {
                 "\nFrom: " + accountFrom +
                 "\nTo: " + accountTo +
                 "\nAmount: " + consoleService.printPrettyMoney(getAmount()) +
-                "\nType: " +this.typeDesc +
-                "\nStatus: "+this.trasferStatusDesc;
+                "\nType: " +transferType.getTypeDesc() +
+                "\nStatus: "+transferStatus.getTrasferStatusDesc();
     }
 
     public Transfer() {
@@ -44,11 +60,11 @@ public class Transfer {
     }
 
     public String getTypeDesc() {
-        return typeDesc;
+        return transferTypeDesc;
     }
 
     public void setTypeDesc(String typeDesc) {
-        this.typeDesc = typeDesc;
+        this.transferTypeDesc = typeDesc;
     }
 
     public Long getTransferId() {

@@ -137,6 +137,18 @@ public class ConsoleService {
         return nf.format(money);
     }
 
+    public void transactionApproved(Double amount){
+        System.out.println("\n--------------------");
+        System.out.println("Transaction of [" + printPrettyMoney(amount)+"] approved");
+        System.out.println("--------------------");
+    }
+
+    public void transactionProcessed(Double amount){
+        System.out.println("\n--------------------");
+        System.out.println("Transaction of [" + printPrettyMoney(amount)+"] processed");
+        System.out.println("--------------------");
+    }
+
 
 
 }

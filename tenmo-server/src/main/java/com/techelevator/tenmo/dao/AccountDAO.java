@@ -12,6 +12,8 @@ public interface AccountDAO {
 
     Account depositAcct(Account account, Long id, Double amount);
 
+    Account findByUserId(Long id);
+
     Account findByAccountId(Long id);
 
 }
