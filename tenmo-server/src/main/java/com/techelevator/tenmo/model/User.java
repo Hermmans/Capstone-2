@@ -10,10 +10,6 @@ public class User {
    private boolean activated;
    private Set<Authority> authorities = new HashSet<>();
 
-   //maybe
-   //user to account has a OneToMany
-   private List<Account> accountList = new ArrayList<>();
-
    public User() { }
 
    public User(Long id, String username, String password, String authorities) {

@@ -132,6 +132,17 @@ public class AccountService {
         return account;
     }
 
+    public boolean userExists(Long id){
+        boolean exists = false;
+        try{
+            User user = getUsersById(id);
+            exists = user != null;
+        }catch (Exception e){
+            System.out.println("User does not exist");
+        }
+        return exists;
+    }
+
 
     //this updates the balance and returns an account with the new balance
     public Account withdraw(Long id, Double amount){

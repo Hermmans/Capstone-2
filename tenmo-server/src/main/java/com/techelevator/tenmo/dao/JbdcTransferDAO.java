@@ -59,37 +59,8 @@ public class JbdcTransferDAO implements TransferDao{
         return transfers.toArray(new TransferDetail[0]);
     }
 
-//    @Override
-//    public TransferDetail getTransferSum(Long id){
-//        TransferDetail transfers = new TransferDetail();
-//
-//        String SQL = "SELECT SUM(amount) FROM transfer  " +
-//                "WHERE (account_from IN (SELECT account_id FROM account WHERE user_id = ?)) " +
-//                "OR (account_to IN (SELECT account_id FROM account WHERE user_id = ?));";
-//
-//        SqlRowSet results = jdbcTemplate.queryForRowSet(SQL, id, id);
-//        while(results.next()){
-//            TransferDetail transfer = mapToRowTransferDetails(results);
-//
-//        }
-//        return transfers;
-//    }
-
     @Override
-    public Transfer addTransfer(Transfer transfer, Long idFrom, Long idTo, Double amount) {
-        String SQL = "INSERT INTO transfer" +
-                " (transfer_type_id, " +
-                "transfer_status_id, " +
-                "account_from, " +
-                "account_to, " +
-                "amount) " +
-                "VALUES (2, 2, ?, ?, ?);";
-        jdbcTemplate.update(SQL, idFrom, idTo, amount);
-        return null;
-    }
-
-    @Override
-    public Transfer addTransferFull(Transfer transfer, Long statusId, Long statusTypeId, Long idFrom, Long idTo, Double amount) {
+    public Transfer addTransfer(Transfer transfer, Long statusId, Long statusTypeId, Long idFrom, Long idTo, Double amount) {
         String SQL = "INSERT INTO transfer" +
                 " (transfer_type_id, " +
                 "transfer_status_id, " +
@@ -169,14 +140,4 @@ public class JbdcTransferDAO implements TransferDao{
         return transfer;
     }
 
-    private Transfer mapToRowTrans(SqlRowSet results){
-        Transfer transfer = new Transfer();
-        transfer.setTransferId(results.getLong("transfer_id"));
-        transfer.setTransferTypeId(results.getLong("transfer_type_id"));
-        transfer.setTransferStatusId(results.getLong("transfer_status_id"));
-        transfer.setAccountFrom(results.getLong("account_from"));
-        transfer.setAccountTo(results.getLong("account_to"));
-        transfer.setAmount(results.getDouble("amount"));
-        return transfer;
-    }
 }

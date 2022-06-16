@@ -25,36 +25,26 @@ public class  TransferController {
         }
 
 
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping(path = "transfers/{id}")
     public Transfer[] listTransferById(@PathVariable Long id) {
         return transferDao.getTransfersByUserId(id);
     }
 
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping(path = "trans/{id}")
     public Transfer listTransferByTransferId(@PathVariable Long id) {
         return transferDao.getTransferByTransferId(id);
     }
 
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping(path = "transfers/")
     public Transfer[] listAllTransfers(){
         return transferDao.getAllTransfers();
     }
 
-    //CREATES TRANSFER
-    @PreAuthorize("permitAll")
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(path = "transfer/{idFrom}/{idTo}/{amount}")
-    public Transfer addToTransfer(@Valid @RequestBody Transfer transfer,
-                                  @PathVariable Long idFrom,
-                                  @PathVariable Long idTo,
-                                  @PathVariable Double amount){
-        return transferDao.addTransfer(transfer, idFrom, idTo, amount);
-    }
 
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @PutMapping(path = "transfer/update/{typeId}/{statusId}/{transferId}")
     public void update(@Valid @RequestBody Transfer transfer,
                             @PathVariable Long typeId,
@@ -66,17 +56,17 @@ public class  TransferController {
     @PreAuthorize("permitAll")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "transfer/{statusId}/{statusTypeId}/{idFrom}/{idTo}/{amount}")
-    public Transfer addToTransferFull(@Valid @RequestBody Transfer transfer,
+    public Transfer addToTransfer(@Valid @RequestBody Transfer transfer,
                                       @PathVariable Long statusId,
                                       @PathVariable Long statusTypeId,
                                       @PathVariable Long idFrom,
                                       @PathVariable Long idTo,
                                       @PathVariable Double amount){
-        return transferDao.addTransferFull(transfer, statusId, statusTypeId, idFrom, idTo, amount);
+        return transferDao.addTransfer(transfer, statusId, statusTypeId, idFrom, idTo, amount);
     }
 
     //TRANSFER DETAILS
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping(path = "transferdetails/{id}")
     public TransferDetail[] listTransferDetails(@PathVariable Long id){
         return transferDao.getTransferDetails(id);

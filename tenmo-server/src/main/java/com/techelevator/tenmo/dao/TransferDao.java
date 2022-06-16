@@ -12,11 +12,9 @@ public interface TransferDao {
 
     Transfer getTransferByTransferId(Long id);
 
-    Transfer addTransfer(Transfer transfer, Long idFrom, Long idTo, Double amount);
-
     TransferDetail[] getTransferDetails(Long id);
 
-    Transfer addTransferFull(Transfer transfer, Long statusId, Long statusTypeId, Long idFrom, Long idTo, Double amount);
+    Transfer addTransfer(Transfer transfer, Long statusId, Long statusTypeId, Long idFrom, Long idTo, Double amount);
 
 //    TransferDetail getTransferSum(Long id);
 

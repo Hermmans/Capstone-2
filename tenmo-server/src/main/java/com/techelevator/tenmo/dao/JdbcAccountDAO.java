@@ -73,6 +73,11 @@ import java.util.List;
     @Override
     public Account withdrawAcct(Account account, Long id, Double amount) {
             Account acct = findByUserId(id);
+
+            if(acct.getBalance()<amount){
+                System.out.println("Not enough money for this transaction");
+                return acct;
+            }
             acct.setBalance(acct.getBalance()-amount);
             String SQL = "UPDATE account SET balance = balance - ? WHERE user_id = ?;";
             jdbcTemplate.update(SQL,amount, id);
@@ -82,6 +87,7 @@ import java.util.List;
     @Override
     public Account depositAcct(Account account, Long id, Double amount) {
             Account acct = findByUserId(id);
+
             acct.setBalance(acct.getBalance()+amount);
             String SQL = "UPDATE account SET balance = balance + ? WHERE user_id = ?;";
             jdbcTemplate.update(SQL,amount, id);

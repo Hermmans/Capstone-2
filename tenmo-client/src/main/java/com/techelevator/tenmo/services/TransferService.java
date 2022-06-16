@@ -63,8 +63,8 @@ public class TransferService {
         }
         return transfers;
     }
-//
-//
+
+
 //    public TransferDetail[] getAllTransferTo(Long id) {
 //        TransferDetail[] transfers = null;
 //        try {
@@ -100,10 +100,11 @@ public class TransferService {
         return transfers;
     }
 
-    public Transfer addTransferFull(Transfer transfer, Long statusId, Long statusTypeId, Long accountFrom, Long accountTo, Double amount) {
-        Transfer t = new Transfer();
+    public Transfer addTransfer(Transfer transfer) {
+        Transfer t = transfer;
         try {
-            t = restTemplate.exchange(API_BASE_URL + "transfer/"+statusId+"/"+statusTypeId+"/"+accountFrom+"/"+accountTo+"/"+ amount,
+            t = restTemplate.exchange(API_BASE_URL + "transfer/"+transfer.getTransferStatusId()+"/"+transfer.getTransferTypeId()+"/"+transfer.getAccountFrom()+"/"+transfer.getAccountTo()+"/"+ transfer
+                            .getAmount(),
                     HttpMethod.POST,
                     makeTransferEntity(t),
                     Transfer.class).getBody();
@@ -115,21 +116,6 @@ public class TransferService {
         return t;
     }
 
-
-    public Transfer addTransfer(Transfer transfer, Long accountFrom, Long accountTo, Double amount) {
-        Transfer t = new Transfer();
-        try {
-            t = restTemplate.exchange(API_BASE_URL + "transfer/" + accountFrom + "/" + accountTo + "/" + amount,
-                    HttpMethod.POST,
-                    makeTransferEntity(t),
-                    Transfer.class).getBody();
-        } catch (RestClientResponseException e) {
-            BasicLogger.log(e.getRawStatusCode() + " : " + e.getStatusText());
-        } catch (ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
-        }
-        return t;
-    }
 
     public void updateTransfer(Transfer transfer, Long typeId, Long statusId, Long transferId){
         HttpEntity<Transfer> entity = makeTransferEntity(transfer);
