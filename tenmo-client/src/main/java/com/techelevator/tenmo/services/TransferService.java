@@ -103,8 +103,10 @@ public class TransferService {
     public Transfer addTransfer(Transfer transfer) {
         Transfer t = transfer;
         try {
-            t = restTemplate.exchange(API_BASE_URL + "transfer/"+transfer.getTransferStatusId()+"/"+transfer.getTransferTypeId()+"/"+transfer.getAccountFrom()+"/"+transfer.getAccountTo()+"/"+ transfer
-                            .getAmount(),
+            //this whole mess gets reduced
+//            t = restTemplate.exchange(API_BASE_URL + "transfer/"+transfer.getTransferStatusId()+"/"+transfer.getTransferTypeId()+"/"+transfer.getAccountFrom()+"/"+transfer.getAccountTo()+"/"+ transfer
+//                            .getAmount(),
+            t= restTemplate.exchange(API_BASE_URL +"add/transfer",
                     HttpMethod.POST,
                     makeTransferEntity(t),
                     Transfer.class).getBody();

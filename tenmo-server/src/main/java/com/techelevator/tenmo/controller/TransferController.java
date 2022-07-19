@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.TransferDao;
+import com.techelevator.tenmo.dao.TransferDetail;
 import com.techelevator.tenmo.dao.TransferStatusDAO;
 import com.techelevator.tenmo.dao.TransferTypeDAO;
 import com.techelevator.tenmo.model.*;
@@ -55,14 +56,9 @@ public class  TransferController {
 
     @PreAuthorize("permitAll")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(path = "transfer/{statusId}/{statusTypeId}/{idFrom}/{idTo}/{amount}")
-    public Transfer addToTransfer(@Valid @RequestBody Transfer transfer,
-                                      @PathVariable Long statusId,
-                                      @PathVariable Long statusTypeId,
-                                      @PathVariable Long idFrom,
-                                      @PathVariable Long idTo,
-                                      @PathVariable Double amount){
-        return transferDao.addTransfer(transfer, statusId, statusTypeId, idFrom, idTo, amount);
+    @PostMapping(path = "add/transfer")
+    public Transfer addToTransfer(@Valid @RequestBody Transfer transfer){
+        return transferDao.addTransfer(transfer, transfer.getTransferStatusId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
     }
 
     //TRANSFER DETAILS
